@@ -1,9 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
-
 export const Hero = () => {
-  return (
-    <section className="py-12 md:py-20">
+  return <section className="py-12 md:py-20">
       <div className="container-narrow">
         <div className="text-center space-y-8">
           <div className="flex justify-center mb-8">
@@ -15,11 +13,7 @@ export const Hero = () => {
               Today's wicked problems, made smaller.
             </h1>
             
-            <p className="body-lg text-muted-foreground max-w-3xl mx-auto">
-              Smaller is a product and strategy partner helping mission-led organisations think Smaller. 
-              By putting values and people at the center, we use technology to unlock access, foster inclusion, 
-              and create systemic impact in small incremental steps.
-            </p>
+            <p className="body-lg text-muted-foreground max-w-3xl mx-auto">Smaller is a product and strategy partner helping mission-led organisations think Smaller. By putting values and people at the center, we use technology to unlock access, foster inclusion, and create systemic impact in small. incremental. steps.</p>
           </div>
           
           <div className="pt-4">
@@ -29,6 +23,5 @@ export const Hero = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
