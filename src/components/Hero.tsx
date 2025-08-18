@@ -17,7 +17,11 @@ export const Hero = () => {
           </div>
           
           <div className="pt-4">
-            <Button size="lg" className="btn-accent px-8 py-4 text-lg">
+            <Button 
+              size="lg" 
+              className="btn-accent px-8 py-4 text-lg"
+              onClick={() => window.location.href = "mailto:warwick@smallerby.design"}
+            >
               Let's make a problem smaller
             </Button>
           </div>
