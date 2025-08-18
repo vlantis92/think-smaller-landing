@@ -34,11 +34,18 @@ export const Approach = () => {
             <h2 className="heading-lg mb-6">A Smaller Approach</h2>
           </div>
           
-          <div className="grid gap-8 md:gap-12">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {principles.map((principle, index) => (
-              <div key={index} className="space-y-3">
-                <h3 className="heading-md">{principle.title}</h3>
-                <p className="body-md text-muted-foreground">{principle.description}</p>
+              <div 
+                key={index} 
+                className="group p-6 bg-card border border-border/20 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-accent/30 hover:bg-accent/5 cursor-pointer"
+              >
+                <h3 className="heading-md mb-4 group-hover:text-accent-foreground transition-colors duration-300">
+                  {principle.title}
+                </h3>
+                <p className="body-md text-muted-foreground group-hover:text-foreground/80 transition-colors duration-300">
+                  {principle.description}
+                </p>
               </div>
             ))}
           </div>
