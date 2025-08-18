@@ -30,7 +30,7 @@ export const Approach = () => {
                 <h3 className="heading-md mb-4 group-hover:text-accent-foreground transition-colors duration-300 text-lg">
                   {principle.title}
                 </h3>
-                <p className="body-md text-muted-foreground group-hover:text-foreground/80 transition-colors duration-300 text-sm">
+                <p className="body-md text-muted-foreground group-hover:text-foreground/80 transition-colors duration-300 text-base">
                   {principle.description}
                 </p>
               </div>)}
