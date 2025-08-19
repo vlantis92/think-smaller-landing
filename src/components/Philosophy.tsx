@@ -33,7 +33,12 @@ export const Philosophy = () => {
           </div>
           
           <div className="text-center pt-8">
-            <Button variant="outline" size="lg" className="btn-outline px-8 py-4">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="btn-outline px-8 py-4"
+              onClick={() => window.open('/manifesto', '_blank')}
+            >
               Read the Smaller manifesto
             </Button>
           </div>
