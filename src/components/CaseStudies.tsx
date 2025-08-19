@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from "@/components/ui/carousel";
+import { useEffect, useState } from "react";
 const caseStudies = [{
   title: "Yoma (Youth Agency Marketplace)",
   challenge: "Youth unemployment is a systemic challenge across Africa. Millions of young people lack access to opportunities, while governments, NGOs, and employers struggle to coordinate efforts at scale. Traditional top-down programs excluded many of the very youth they aimed to serve.",
@@ -17,11 +18,42 @@ const caseStudies = [{
   outcome: ["Teachers can now create personalized, curriculum-aligned decodable books in minutes, saving time and effort.", "Students receive reading materials tailored to their learning stage and interests, improving confidence and literacy progress.", "Akoranga demonstrates how human-centered AI can amplify educator impact while maintaining inclusion, adaptability, and sustainable outcomes."]
 }];
 export const CaseStudies = () => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
   return <section className="bg-background py-[76px]">
       <div className="container-narrow">
         <h2 className="heading-lg mb-16 text-center">Case Studies</h2>
         
-        <Carousel className="w-full max-w-4xl mx-auto">
+        {/* Pagination Dots */}
+        <div className="flex justify-center gap-2 mb-8">
+          {caseStudies.map((_, index) => (
+            <button
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === current 
+                  ? "bg-primary w-6" 
+                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+              }`}
+              onClick={() => api?.scrollTo(index)}
+              aria-label={`Go to case study ${index + 1}`}
+            />
+          ))}
+        </div>
+        
+        <Carousel className="w-full max-w-4xl mx-auto" setApi={setApi}>
           <CarouselContent>
             {caseStudies.map((study, index) => <CarouselItem key={index}>
                 <Card className="border-border/20">
