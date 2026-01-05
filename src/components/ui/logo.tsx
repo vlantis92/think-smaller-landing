@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import smallerLogo from "@/assets/smaller-logo.png";
 
 interface LogoProps {
   className?: string;
@@ -14,7 +15,7 @@ export const Logo = ({ className, size = "md" }: LogoProps) => {
 
   return (
     <img 
-      src="/lovable-uploads/83bd4db1-eff7-4e60-b5bf-c7ea1a7a9365.png" 
+      src={smallerLogo} 
       alt="Smaller logo"
       className={cn("w-auto", sizeClasses[size], className)}
     />
