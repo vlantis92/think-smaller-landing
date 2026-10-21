@@ -375,10 +375,11 @@ html:not(.zoom) .hero-hint,html:not(.zoom) .hero-end{display:none}
     ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
   }
   // Untransformed layout position of an element inside its scene.
+  // Sub-pixel, and independent of the scene's current zoom (rounding errors get magnified by the zoom).
   function geo(el, scene) {
-    let x = 0, y = 0, e = el;
-    while (e && e !== scene) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; }
-    return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2, w: el.offsetWidth, h: el.offsetHeight };
+    const sr = scene.getBoundingClientRect(), er = el.getBoundingClientRect();
+    const k = (sr.width / scene.offsetWidth) || 1;
+    return { x: (er.left - sr.left + er.width / 2) / k, y: (er.top - sr.top + er.height / 2) / k, w: er.width / k, h: er.height / k };
   }
 
   // Scroll-revealed lines
@@ -585,14 +586,14 @@ html:not(.zoom) .hero-hint,html:not(.zoom) .hero-end{display:none}
   const HOLD = [0.75, 1.7, 1.9, 1.7, 1.7, 2.0, 1.4], TR = 1.15, BACK = 2.6, END = 0.9;
   let segs = [], total = 0, G = [];
 
-  function measure() {
-    G = [];
-    for (let i = 0; i < N - 1; i++) {
-      const P = geo($('[data-portal]', scenes[i]), scenes[i]);
-      const S = geo($('[data-seed]', scenes[i + 1]), scenes[i + 1]);
-      G.push({ P, S, R: Math.max(2, S.w / Math.max(1, P.w)) });
-    }
+  // Portal (in scene i) and seed (in scene i+1) are measured live, so any layout
+  // change (mobile address bar, font swap, reflowing text) keeps them aligned.
+  const portals = scenes.map(s => $('[data-portal]', s)), seeds = scenes.map(s => $('[data-seed]', s));
+  function geoAt(i) {
+    const P = geo(portals[i], scenes[i]), S = geo(seeds[i + 1], scenes[i + 1]);
+    return (G[i] = { P, S, R: Math.max(2, S.w / Math.max(1, P.w)) });
   }
+  function measure() { for (let i = 0; i < N - 1; i++) geoAt(i); }
   function buildTimeline() {
     const vh = innerHeight; segs = []; let y = 0;
     for (let i = 0; i < N; i++) {
@@ -648,7 +649,7 @@ html:not(.zoom) .hero-hint,html:not(.zoom) .hero-end{display:none}
       a.style.transform = 'none'; a.style.opacity = 1; a.style.setProperty('--in', 1); a.style.visibility = 'visible';
       MODS[j].update(st.h[j]); runSteps(j, st.h[j]);
     } else {
-      const g = G[j], b = scenes[j + 1];
+      const g = geoAt(j), b = scenes[j + 1];
       const s = Math.pow(g.R, u), e = sm(u);
       const qx = lerp(g.P.x, g.S.x, e), qy = lerp(g.P.y, g.S.y, e);
       const out = 1 - ramp(u, 0.3, 0.36);
@@ -688,17 +689,23 @@ html:not(.zoom) .hero-hint,html:not(.zoom) .hero-end{display:none}
   let lastW = 0, lastH = 0;
   function relayout(force) {
     const W = innerWidth, H = innerHeight;
-    if (!force && W === lastW && Math.abs(H - lastH) < 140) return;
-    const frac = total ? window.scrollY / total : 0;
-    lastW = W; lastH = H;
+    // Always re-lay out the scenes; only rebuild the scroll timeline for real size
+    // changes, so the address bar sliding in and out doesn't jump the scroll position.
+    const rebuild = force || W !== lastW || Math.abs(H - lastH) >= 140;
     MODS.forEach(m => m.layout());
-    measure(); buildTimeline();
-    if (frac) window.scrollTo(0, frac * total);
-    cy = window.scrollY; dirty = true;
+    measure();
+    if (rebuild) {
+      const frac = total ? window.scrollY / total : 0;
+      lastW = W; lastH = H;
+      buildTimeline();
+      if (frac) window.scrollTo(0, frac * total);
+      cy = window.scrollY;
+    }
+    dirty = true;
   }
   relayout(true);
   if (document.fonts) document.fonts.ready.then(() => relayout(true));
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => relayout(false), 150); });
+  let rt; addEventListener('resize', () => { dirty = true; clearTimeout(rt); rt = setTimeout(() => relayout(false), 120); });
   requestAnimationFrame(frame);
 })();
 </script>
